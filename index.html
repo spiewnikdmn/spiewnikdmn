@@ -235,6 +235,30 @@
       font-weight: bold;
     }
 
+    /* --- Dodane style dla zakładki Gitarzyści --- */
+   #guitarSong {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(41, 89, 136, 0.3);
+  padding: 1.5rem;
+  font-family: monospace;
+  font-size: 18px;
+  line-height: 1.3;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #2a2a2a;
+
+  /* Dodaj transform origin i transition */
+  transform-origin: top left;
+  transition: transform 0.15s ease;
+
+  /* Usuń max-height i overflow, aby skala działała lepiej */
+  /* max-height: 60vh; */
+  /* overflow-y: auto; */
+}
+
+
+
 
   
   </style>
@@ -305,9 +329,11 @@ const firebaseConfig = {
 </section>
 
 <section>
-  <h3>Podgląd pieśni z akordami</h3>
+  <h3 id="guitarTitle">Podgląd pieśni z akordami</h3>
   <div id="guitarSong"></div>
 </section>
+
+
 
 <script>
 let songs = [];
@@ -614,6 +640,53 @@ async function addSong() {
   }
 }
 renderList();
+
+function viewChords(i) {
+  const song = songs[i];
+  const html = song.slides.map(slide =>
+    `<pre>${slide.replace(/\[([^\]]+)\]/g, '<span class="guitar-chord">[$1]</span>')}</pre>`
+  ).join('<hr>');
+  const guitarSongDiv = document.getElementById('guitarSong');
+  guitarSongDiv.innerHTML = html;
+
+  scaleGuitarSong(); // dopasuj rozmiar po wstawieniu tekstu
+
+  showTab(3);
+}
+
+// Skalowanie tekstu w zakładce Gitarzyści
+function scaleGuitarSong() {
+  const container = document.getElementById('guitarSong');
+  if (!container) return;
+
+  container.style.transformOrigin = 'top left';
+  container.style.transition = 'transform 0.15s ease';
+
+  container.style.transform = 'scale(1)'; // reset skali
+
+  const maxHeight = window.innerHeight * 0.85;
+  const maxWidth = window.innerWidth * 0.95;
+
+  const naturalHeight = container.scrollHeight;
+  const naturalWidth = container.scrollWidth;
+
+  const scaleY = maxHeight / naturalHeight;
+  const scaleX = maxWidth / naturalWidth;
+
+  const scale = Math.min(scaleX, scaleY, 1);
+
+  container.style.transform = `scale(${scale})`;
+}
+
+// Przelicz skalowanie po zmianie rozmiaru okna, jeśli zakładka Gitarzyści jest aktywna
+window.addEventListener('resize', () => {
+  const tabIndex = [...document.querySelectorAll('section')].findIndex(s => s.classList.contains('active'));
+  if (tabIndex === 3) {
+    scaleGuitarSong();
+  }
+});
+
+
 </script>
 </body>
 </html>
