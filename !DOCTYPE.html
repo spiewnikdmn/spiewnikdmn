@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Śpiewnik DMNowy</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    nav {
+      display: flex;
+      background: #343a40;
+    }
+
+    nav button {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      background: #343a40;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    nav button.active, nav button:hover {
+      background: #495057;
+    }
+
+    section {
+      display: none;
+      padding: 2rem;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    .song-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .song-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .song-buttons button {
+      margin-left: 0.3rem;
+      padding: 0.4rem 0.6rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #17a2b8;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    .song-buttons button:hover {
+      background-color: #138496;
+    }
+
+    textarea, input {
+      width: 100%;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-family: monospace;
+    }
+
+    .guitar-chord {
+      color: red;
+      font-weight: bold;
+    }
+
+    #displayCurrent, #displayNext {
+      padding: 2rem;
+      background: black;
+      border-radius: 10px;
+      margin-top: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      color: white;
+      text-align: center;
+      white-space: pre-wrap;
+    }
+
+    #displayCurrent {
+      font-size: 2.5em;
+      font-weight: bold;
+    }
+
+    #displayNext {
+      font-size: 1.5em;
+      color: #ccc;
+    }
+
+    #slideQueue div {
+      margin-top: 0.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      background: #e9ecef;
+      border-radius: 6px;
+    }
+
+    #slideQueue div:hover {
+      background: #dee2e6;
+    }
+  </style>
+  <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCmuAt6EE34l-J9-44CNVNyVIPgnmurhqo",
+  authDomain: "spiewnikdmn.firebaseapp.com",
+  projectId: "spiewnikdmn",
+  storageBucket: "spiewnikdmn.firebasestorage.app",
+  messagingSenderId: "608810884560",
+  appId: "1:608810884560:web:e554c9abb9840dd3696dd5",
+  measurementId: "G-QJGH7YDG5K"
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
+</head>
+<body>
+
+<nav>
+  <button onclick="showTab(0)" class="active">Lista pieśni</button>
+  <button onclick="showTab(1)">Wyświetlanie</button>
+  <button onclick="showTab(2)">Dodaj pieśń</button>
+  <button onclick="showTab(3)">Gitarzyści</button>
+</nav>
+
+<section class="active">
+  <input id="search" placeholder="Szukaj pieśni...">
+  <div id="songList"></div>
+</section>
+
+<section>
+  <button onclick="prevSlide()">← Poprzedni</button>
+  <button onclick="nextSlide()">Następny →</button>
+  <button onclick="toggleBlackout()">Czarny ekran</button>
+  <button onclick="openExternalWindow()">Zewnętrzne okno</button>
+
+  <h3>Slajd publiczności:</h3>
+  <div id="displayCurrent"></div>
+  <h4>Następny slajd:</h4>
+  <div id="displayNext"></div>
+
+  <h4>Kolejka slajdów:</h4>
+  <div id="slideQueue"></div>
+</section>
+
+<section>
+  <input id="titleInput" placeholder="Tytuł pieśni">
+  <textarea id="textInput" placeholder="Tekst z akordami w [ ] i slajdami oddzielonymi pustą linią" rows="10"></textarea>
+  <button onclick="addSong()">Dodaj pieśń</button>
+</section>
+
+<section>
+  <h3>Podgląd pieśni z akordami</h3>
+  <div id="guitarSong"></div>
+</section>
+
+<script>
+let songs = [];
+let queue = [];
+let current = 0;
+let blackout = false;
+let externalWin = null;
+
+function showTab(i) {
+  document.querySelectorAll('section').forEach((sec, idx) => {
+    sec.classList.toggle('active', idx === i);
+  });
+  document.querySelectorAll('nav button').forEach((btn, idx) => {
+    btn.classList.toggle('active', idx === i);
+  });
+}
+
+async function fetchSongs() {
+  const snapshot = await db.collection('songs').orderBy('title').get();
+  songs = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+  renderList();
+}
+
+function renderList() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const container = document.getElementById('songList');
+  container.innerHTML = '';
+
+  songs
+    .filter(song => song.title.toLowerCase().includes(search))
+    .forEach((song, index) => {
+      const card = document.createElement('div');
+      card.className = 'song-card';
+
+      const title = document.createElement('div');
+      title.className = 'song-title';
+      title.textContent = song.title;
+
+      const buttons = document.createElement('div');
+      buttons.className = 'song-buttons';
+
+      const viewBtn = document.createElement('button');
+      viewBtn.textContent = 'Slajdy';
+      viewBtn.onclick = () => viewSong(index);
+
+      const chordsBtn = document.createElement('button');
+      chordsBtn.textContent = 'Akordy';
+      chordsBtn.onclick = () => viewChords(index);
+
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'Edytuj';
+      editBtn.onclick = () => editSong(index);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Usuń';
+      deleteBtn.onclick = () => deleteSong(index);
+
+      buttons.append(viewBtn, chordsBtn, editBtn, deleteBtn);
+      card.append(title, buttons);
+      container.appendChild(card);
+    });
+}
+
+
+
+document.getElementById('search').addEventListener('input', renderList);
+fetchSongs(); // <- ładuje dane z chmury przy starcie
+
+
+async function deleteSong(i) {
+  if (confirm("Na pewno usunąć?")) {
+    await db.collection('songs').doc(songs[i].id).delete();
+    fetchSongs();
+  }
+}
+
+
+async function editSong(i) {
+  const song = songs[i];
+  document.getElementById('titleInput').value = song.title;
+  document.getElementById('textInput').value = song.slides.join('\n\n');
+  await db.collection('songs').doc(song.id).delete();  // Usuwamy, a potem dodamy nową wersję
+  fetchSongs();
+  showTab(2);
+}
+
+
+function viewSong(i) {
+  queue = [songs[i]];
+  current = 0;
+  updateDisplay();
+  updateQueueDisplay();
+  updateExternal();
+  showTab(1);
+}
+
+function viewChords(i) {
+  const song = songs[i];
+  const html = song.slides.map(slide =>
+    `<pre>${slide.replace(/\[([^\]]+)\]/g, '<span class="guitar-chord">[$1]</span>')}</pre>`
+  ).join('<hr>');
+  document.getElementById('guitarSong').innerHTML = html;
+  showTab(3);
+}
+
+function nextSlide() {
+  if (queue.length === 0) return;
+  const song = queue[0];
+  if (current < song.slides.length - 1) current++;
+  updateDisplay();
+  updateExternal();
+}
+
+function prevSlide() {
+  if (queue.length === 0) return;
+  if (current > 0) current--;
+  updateDisplay();
+  updateExternal();
+}
+
+function toggleBlackout() {
+  blackout = !blackout;
+  updateExternal();
+}
+
+function updateDisplay() {
+  if (queue.length === 0) return;
+  const song = queue[0];
+  document.getElementById('displayCurrent').textContent = song.slides[current].replace(/\[([^\]]+)\]/g, '');
+  document.getElementById('displayNext').textContent = song.slides[current + 1]?.replace(/\[([^\]]+)\]/g, '') || "---";
+}
+
+function updateQueueDisplay() {
+  const container = document.getElementById('slideQueue');
+  container.innerHTML = '';
+  if (queue.length === 0) return;
+  queue[0].slides.forEach((slide, index) => {
+    const div = document.createElement('div');
+    div.textContent = `Slajd ${index + 1}: ${slide.split(' ')[0]}...`;
+    div.ondblclick = () => {
+      current = index;
+      updateDisplay();
+      updateExternal();
+    };
+    container.appendChild(div);
+  });
+}
+
+function openExternalWindow() {
+  externalWin = window.open('', 'Slajdy', 'width=800,height=600');
+  externalWin.document.write('<body style="background:black;color:white;text-align:center;display:flex;flex-direction:column;justify-content:center;height:100vh;font-size:3em;margin:0;white-space:pre-wrap;"><div id="title" style="color:#00f;font-size:0.5em;"></div><div id="slide"></div></body>');
+  updateExternal();
+}
+
+function updateExternal() {
+  if (!externalWin || externalWin.closed) return;
+  const slide = blackout ? '' : queue[0]?.slides[current].replace(/\[([^\]]+)\]/g, '') || '';
+  const title = blackout ? '' : queue[0]?.title || '';
+  externalWin.document.getElementById('title').textContent = title;
+  externalWin.document.getElementById('slide').textContent = slide;
+  externalWin.document.body.style.backgroundColor = blackout ? 'black' : 'black';
+}
+
+document.getElementById('textInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = this.selectionStart;
+    const end = this.selectionEnd;
+    this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+    this.selectionStart = this.selectionEnd = start + 1;
+  }
+});
+
+document.getElementById('search').addEventListener('input', renderList);
+
+// Funkcja dodająca pieśń do Firestore
+async function addSong() {
+  const title = document.getElementById('titleInput').value.trim();
+  const text = document.getElementById('textInput').value.trim();
+
+  if (!title || !text) {
+    alert("Wprowadź tytuł i tekst pieśni!");
+    return;
+  }
+
+  const slides = text.split(/\n{2,}/).map(s => s.trim());
+
+  try {
+    await db.collection("songs").add({ title, slides });
+    document.getElementById('titleInput').value = '';
+    document.getElementById('textInput').value = '';
+    fetchSongs(); // odśwież listę
+    alert("Pieśń dodana!");
+    showTab(0);  // wróć do listy pieśni
+  } catch (error) {
+    console.error("Błąd przy dodawaniu pieśni:", error);
+    alert("Nie udało się dodać pieśni. Sprawdź konsolę.");
+  }
+}
+renderList();
+</script>
+</body>
+</html>
