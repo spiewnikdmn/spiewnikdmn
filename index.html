@@ -7,20 +7,19 @@
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      background: #f8f9fa;
+      background: #c8d9eb;
       color: #333;
     }
 
     nav {
       display: flex;
-      background: #343a40;
     }
 
     nav button {
       flex: 1;
       padding: 1rem;
       border: none;
-      background: #343a40;
+      background: #295988;
       color: white;
       font-size: 1rem;
       cursor: pointer;
@@ -28,7 +27,7 @@
     }
 
     nav button.active, nav button:hover {
-      background: #495057;
+      background: #326ba5;
     }
 
     section {
@@ -41,7 +40,7 @@
     }
 
     .song-card {
-      background: white;
+      background: rgb(255, 255, 255);
       border-radius: 12px;
       padding: 1rem;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -54,6 +53,7 @@
     .song-title {
       font-weight: bold;
       font-size: 1.1rem;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
     }
 
     .song-buttons button {
@@ -62,13 +62,13 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      background-color: #17a2b8;
+      background: #3b7dc0;
       color: white;
       transition: background 0.3s;
     }
 
     .song-buttons button:hover {
-      background-color: #138496;
+      background-color: #295988;
     }
 
     textarea, input {
@@ -89,12 +89,27 @@
     #displayCurrent, #displayNext {
       padding: 2rem;
       background: black;
-      border-radius: 10px;
+      border-radius: 15px;
       margin-top: 1rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.897);
       color: white;
       text-align: center;
       white-space: pre-wrap;
+    }
+
+    .slidescontrol  {
+      margin-left: 0.3rem;
+      padding: 0.4rem 0.6rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #3b7dc0;;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    .slidescontrol:hover {
+    background-color: #295988;
     }
 
     #displayCurrent {
@@ -111,7 +126,7 @@
       margin-top: 0.5rem;
       cursor: pointer;
       padding: 0.5rem;
-      background: #e9ecef;
+      background: #dee2e6be;
       border-radius: 6px;
     }
 
@@ -154,10 +169,10 @@ const firebaseConfig = {
 </section>
 
 <section>
-  <button onclick="prevSlide()">← Poprzedni</button>
-  <button onclick="nextSlide()">Następny →</button>
-  <button onclick="toggleBlackout()">Czarny ekran</button>
-  <button onclick="openExternalWindow()">Zewnętrzne okno</button>
+  <button class="slidescontrol" onclick="prevSlide()">← Poprzedni</button>
+  <button class="slidescontrol" onclick="nextSlide()">Następny →</button>
+  <button class="slidescontrol" onclick="toggleBlackout()">Czarny ekran</button>
+  <button class="slidescontrol" onclick="openExternalWindow()">Zewnętrzne okno</button>
 
   <h3>Slajd publiczności:</h3>
   <div id="displayCurrent"></div>
