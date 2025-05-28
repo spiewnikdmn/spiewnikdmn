@@ -573,8 +573,6 @@ function openExternalWindow() {
 function updateExternal() {
   if (!externalWin || externalWin.closed) return;
   const slide = blackout ? '' : queue[0]?.slides[current].replace(/\[([^\]]+)\]/g, '') || '';
-  const title = blackout ? '' : queue[0]?.title || '';
-  externalWin.document.getElementById('title').textContent = title;
   externalWin.document.getElementById('slide').textContent = slide;
   externalWin.document.body.style.backgroundColor = blackout ? 'black' : 'black';
 }
