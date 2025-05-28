@@ -13,33 +13,46 @@
 
     nav {
       display: flex;
+      position: fixed;
+      width: 100%;
+      right: 0;
     }
 
     nav button {
       flex: 1;
-      padding: 1rem;
-      border: none;
+      padding: 1.2rem;
       background: #295988;
       color: white;
       font-size: 1rem;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.5s;
+      border-left: 2px black;
+      border-bottom: 3px solid black;
     }
 
     nav button.active, nav button:hover {
       background: #326ba5;
     }
-
+    
+   
     section {
       display: none;
-      padding: 2rem;
+      padding-top: 4rem;
     }
 
     section.active {
       display: block;
     }
 
+    #songList {
+      width: 80%;
+      margin: 3rem auto 0 auto; 
+    }
+
     .song-card {
+      width: 80%;
+      padding: 2rem;
+      margin: 1rem auto 0 auto;
       background: rgb(255, 255, 255);
       border-radius: 12px;
       padding: 1rem;
@@ -64,14 +77,14 @@
       cursor: pointer;
       background: #3b7dc0;
       color: white;
-      transition: background 0.3s;
+      transition: background 0.5s;
     }
 
     .song-buttons button:hover {
       background-color: #295988;
     }
 
-    textarea, input {
+      textarea, input {
       width: 100%;
       margin-top: 0.5rem;
       margin-bottom: 1rem;
@@ -81,20 +94,32 @@
       font-family: monospace;
     }
 
+    .search-bar{
+      width: 20%;
+      display: flex;
+      position: fixed;
+      top: 3.4rem;
+      right: 0.1%;
+      z-index: 10;
+      border: 1px solid #000000;
+    }
+
+    .quote {
+      width: 100%;
+      margin: 0;
+      left: 0;
+      top: 3.8rem;
+      position: fixed;
+      padding: 0.5rem;
+      color: rgb(255, 255, 255);
+      font-size: 1rem;
+      background-color: #295988;
+
+    }
+
     .guitar-chord {
       color: red;
       font-weight: bold;
-    }
-
-    #displayCurrent, #displayNext {
-      padding: 2rem;
-      background: black;
-      border-radius: 15px;
-      margin-top: 1rem;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.897);
-      color: white;
-      text-align: center;
-      white-space: pre-wrap;
     }
 
     .slidescontrol  {
@@ -105,34 +130,113 @@
       cursor: pointer;
       background-color: #3b7dc0;;
       color: white;
-      transition: background 0.3s;
+      transition: background 0.5s;
     }
 
     .slidescontrol:hover {
-    background-color: #295988;
+      background-color: #295988;
+    }
+    .display-section {
+  padding-top: 4rem; /* jeśli potrzebujesz odstępu od góry */
     }
 
-    #displayCurrent {
-      font-size: 2.5em;
+    .buttons-row {
+
+      display: flex;
+      gap: 1rem;
+      margin: 1rem;
+      margin: 0 auto 1rem auto;  
+      justify-content: center;  
+      width: fit-content;        
+      padding: 1rem 2rem;        
+      font-size: 1.2rem;         
+    }
+
+    .button-row {
+      padding: 1rem 3rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #3b7dc0;;
+      color: white;
+      transition: background 0.5s;
+    }
+
+    .button-row:hover {
+      background-color: #295988;;
+    }
+
+    .main-display {
+      display: flex;
+      gap: 1rem;
+      height: 70vh;  /* wysokość sekcji */
+    }
+
+    .slide-queue {
+      flex: 0 0 30%;
+      background: #eee;
+      border-radius: 6px;
+      padding: 0.5rem;
+      overflow-y: auto;
+    }
+
+    .slides-display {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+   .slide-window {
+      height: 50%; /* lub np. 300px – dowolna stała wartość */
+      overflow: hidden; /* ukryj nadmiar tekstu */
+      text-overflow: ellipsis; /* opcjonalnie: ... */
+      white-space: normal; /* lub pre-wrap, zależnie od potrzeb */
+      flex-shrink: 0; /* zapobiega kurczeniu */
+      margin-right: 1rem;
+    }
+    .current-slide {
+      background-color: black;
+      color: white;
+      font-size: 2em;
+    }
+
+    .next-slide {
+      background-color: #222;
+      color: #ccc;
+      font-size: 1.5em;
+    }
+
+    .slide-queue > div {
+      background: white;
+      margin-bottom: 1rem;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: background-color 0.3s, box-shadow 0.3s;
+      user-select: none;
+    }
+    .slide-queue > div:hover {
+      background-color: #e0e7f3;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+     .slide-queue  {
+      background-color: rgb(240, 242, 243);
+      margin-top: 0.8rem;
+
+    }
+  
+    .slide-queue > div.active {
+      background-color: #295988;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       font-weight: bold;
     }
 
-    #displayNext {
-      font-size: 1.5em;
-      color: #ccc;
-    }
 
-    #slideQueue div {
-      margin-top: 0.5rem;
-      cursor: pointer;
-      padding: 0.5rem;
-      background: #dee2e6be;
-      border-radius: 6px;
-    }
-
-    #slideQueue div:hover {
-      background: #dee2e6;
-    }
+  
   </style>
   <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
@@ -163,25 +267,36 @@ const firebaseConfig = {
   <button onclick="showTab(3)">Gitarzyści</button>
 </nav>
 
+
+
 <section class="active">
-  <input id="search" placeholder="Szukaj pieśni...">
   <div id="songList"></div>
+  <input id="search" class="search-bar" placeholder="Szukaj pieśni...">
+  <blockquote class="quote">
+  Jezu, Maryjo, Józefie Święty - opiekujcie się nami!
+</blockquote>
 </section>
 
-<section>
-  <button class="slidescontrol" onclick="prevSlide()">← Poprzedni</button>
-  <button class="slidescontrol" onclick="nextSlide()">Następny →</button>
-  <button class="slidescontrol" onclick="toggleBlackout()">Czarny ekran</button>
-  <button class="slidescontrol" onclick="openExternalWindow()">Zewnętrzne okno</button>
+<section class="display-section">
+  <div class="buttons-row">
+    <button class="button-row" onclick="prevSlide()">← Poprzedni</button>
+    <button class="button-row" onclick="nextSlide()">Następny →</button>
+    <button class="button-row" onclick="toggleBlackout()">Czarny ekran</button>
+    <button class="button-row" onclick="openExternalWindow()">Zewnętrzne okno</button>
+  </div>
 
-  <h3>Slajd publiczności:</h3>
-  <div id="displayCurrent"></div>
-  <h4>Następny slajd:</h4>
-  <div id="displayNext"></div>
+  <div class="main-display">
+    <div id="slideQueue" class="slide-queue">
+      <!-- Lista slajdów -->
+    </div>
 
-  <h4>Kolejka slajdów:</h4>
-  <div id="slideQueue"></div>
+    <div class="slides-display">
+      <div id="displayCurrent" class="slide-window current-slide"></div>
+      <div id="displayNext" class="slide-window next-slide"></div>
+    </div>
+  </div>
 </section>
+
 
 <section>
   <input id="titleInput" placeholder="Tytuł pieśni">
@@ -213,48 +328,127 @@ function showTab(i) {
 async function fetchSongs() {
   const snapshot = await db.collection('songs').orderBy('title').get();
   songs = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+  // Posortuj alfabetycznie wg tytułu, choć kolekcja już jest sortowana, ale na pewno:
+  songs.sort((a, b) => a.title.localeCompare(b.title));
   renderList();
 }
 
+
 function renderList() {
-  const search = document.getElementById('search').value.toLowerCase();
+  const search = document.getElementById('search').value.toLowerCase().trim();
   const container = document.getElementById('songList');
   container.innerHTML = '';
 
-  songs
-    .filter(song => song.title.toLowerCase().includes(search))
-    .forEach((song, index) => {
-      const card = document.createElement('div');
-      card.className = 'song-card';
+  songs.forEach((song, index) => {
+    // łączymy wszystkie slajdy w jeden tekst, usuwamy akordy
+    const fullText = song.slides.join(' ').replace(/\[[^\]]*\]/g, '').toLowerCase();
 
-      const title = document.createElement('div');
-      title.className = 'song-title';
-      title.textContent = song.title;
+    // Sprawdzamy, czy tytuł lub tekst zawiera wyszukiwane słowo
+    const matchesSearch = !search || song.title.toLowerCase().includes(search) || fullText.includes(search);
 
-      const buttons = document.createElement('div');
-      buttons.className = 'song-buttons';
+    if (!matchesSearch) return; // pomijamy, jeśli nie pasuje
 
-      const viewBtn = document.createElement('button');
-      viewBtn.textContent = 'Slajdy';
-      viewBtn.onclick = () => viewSong(index);
+    const card = document.createElement('div');
+    card.className = 'song-card';
 
-      const chordsBtn = document.createElement('button');
-      chordsBtn.textContent = 'Akordy';
-      chordsBtn.onclick = () => viewChords(index);
+    // numer w niebieskim kwadraciku
+    const numberBox = document.createElement('div');
+    numberBox.style.minWidth = '20px';
+    numberBox.style.fontWeight = 'bold';
+    numberBox.style.fontSize = '1.2rem';
+    numberBox.style.color = 'white';
+    numberBox.style.backgroundColor = '#295988';  // niebieski kolor
+    numberBox.style.borderRadius = '6px';
+    numberBox.style.textAlign = 'center';
+    numberBox.style.marginRight = '0.5rem';
+    numberBox.style.padding = '0.2rem 0.5rem';
+    numberBox.textContent = index + 1;
 
-      const editBtn = document.createElement('button');
-      editBtn.textContent = 'Edytuj';
-      editBtn.onclick = () => editSong(index);
+    const title = document.createElement('div');
+    title.className = 'song-title';
+    title.textContent = song.title;
 
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Usuń';
-      deleteBtn.onclick = () => deleteSong(index);
+    // fragment tekstu pod tytułem tylko jeśli jest wpisane coś w wyszukiwarkę
+    const snippet = document.createElement('div');
+    snippet.style.marginTop = '0.3rem';
+    snippet.style.fontSize = '0.9rem';
+    snippet.style.color = '#555';
+    snippet.style.whiteSpace = 'normal';
+    snippet.style.wordWrap = 'break-word';
+    snippet.style.maxWidth = '70%';
 
-      buttons.append(viewBtn, chordsBtn, editBtn, deleteBtn);
-      card.append(title, buttons);
-      container.appendChild(card);
-    });
+    if (search) {
+      const foundIndex = fullText.indexOf(search);
+      if (foundIndex !== -1) {
+        const snippetRadius = 50;
+        let start = foundIndex - snippetRadius;
+        if (start < 0) start = 0;
+        let end = foundIndex + search.length + snippetRadius;
+        if (end > fullText.length) end = fullText.length;
+
+        const originalText = song.slides.join(' ').replace(/\[[^\]]*\]/g, '');
+        let snippetText = originalText.slice(start, end);
+
+        const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        snippet.innerHTML = snippetText.replace(regex, match => `<span style="background: yellow; color: black;">${match}</span>`);
+      }
+    }
+
+    const buttons = document.createElement('div');
+    buttons.className = 'song-buttons';
+
+    const viewBtn = document.createElement('button');
+    viewBtn.textContent = 'Slajdy';
+    viewBtn.onclick = () => viewSong(index);
+
+    const chordsBtn = document.createElement('button');
+    chordsBtn.textContent = 'Akordy';
+    chordsBtn.onclick = () => viewChords(index);
+
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edytuj';
+    editBtn.onclick = () => editSong(index);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Usuń';
+    deleteBtn.onclick = () => deleteSong(index);
+
+    buttons.append(viewBtn, chordsBtn, editBtn, deleteBtn);
+
+    // Ustawiamy flex, by numer i tytuł były obok siebie
+    card.style.display = 'flex';
+    card.style.alignItems = 'center';
+
+    // tworzymy kontener na numer + tytuł żeby tytuł był obok numeru, a snippet pod tytułem
+    const textContainer = document.createElement('div');
+    textContainer.style.flexGrow = '1';
+    textContainer.style.display = 'flex';
+    textContainer.style.flexDirection = 'column';
+
+    const titleRow = document.createElement('div');
+    titleRow.style.display = 'flex';
+    titleRow.style.alignItems = 'center';
+
+    titleRow.appendChild(numberBox);
+    titleRow.appendChild(title);
+
+    textContainer.appendChild(titleRow);
+
+    if (search) {
+      textContainer.appendChild(snippet);
+    }
+
+    card.appendChild(textContainer);
+    card.appendChild(buttons);
+
+    container.appendChild(card);
+  });
 }
+
+
+
+
+
 
 
 
@@ -343,9 +537,38 @@ function updateQueueDisplay() {
 
 function openExternalWindow() {
   externalWin = window.open('', 'Slajdy', 'width=800,height=600');
-  externalWin.document.write('<body style="background:black;color:white;text-align:center;display:flex;flex-direction:column;justify-content:center;height:100vh;font-size:3em;margin:0;white-space:pre-wrap;"><div id="title" style="color:#00f;font-size:0.5em;"></div><div id="slide"></div></body>');
+  externalWin.document.write(`
+    <html>
+      <head>
+        <style>
+          body {
+            background: black;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+            font-size: 3em;
+            margin: 0;
+            white-space: pre-wrap;
+          }
+          #slide {
+            color: white;
+            font-weight: bold;
+          }
+        </style>
+      </head>
+      <body>
+        <div id="title"></div>
+        <div id="slide"></div>
+      </body>
+    </html>
+  `);
+  externalWin.document.close(); // ważne do poprawnego renderu
   updateExternal();
 }
+
 
 function updateExternal() {
   if (!externalWin || externalWin.closed) return;
